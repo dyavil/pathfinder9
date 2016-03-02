@@ -19,6 +19,10 @@
 
 #include <stdio.h>
 #include <vector>
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <iostream>
 #include "board.hpp"
 
 //a graph node
@@ -51,4 +55,8 @@ void create_graph(RRBoard board, graph & g);
 int quicker_pace(graph & g);
 
 int get_graph_state(int column, int line, RRBoard & board);
+
+std::string graph_to_string(graph & g);
+
+void graph_to_file(graph & g);
 

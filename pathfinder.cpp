@@ -112,6 +112,43 @@ int get_graph_state(int column, int line, RRBoard & board)
     return -1;
 }
 
+std::string graph_to_string(graph & g)
+{
+	
+	std::stringstream ss;
+	std::string str;
+	movement tmp;
+	
+	for(size_t i = 0; i < g.size(); ++i)
+	{
+		tmp = g[i];
+		ss << tmp.current_state << " " << tmp.action << " " << tmp.arrival_state << "\n";
+	
+	}
+	
+	str = ss.str();
+	
+	return str;
+
+}
 
 
+void graph_to_file(graph & g)
+{
 
+	std::ofstream os("./log/log.txt");
+	
+	if (!os)
+	{
+	
+		std::cerr << "Error" << std::endl;
+		
+	}
+	else
+	{  
+	
+  		os << graph_to_string(g); 
+  		 
+	}
+
+}
