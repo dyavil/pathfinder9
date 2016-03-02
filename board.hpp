@@ -84,7 +84,8 @@ typedef enum {
   RR_MOVE_BACKWARD_1,
   RR_TURN_LEFT,
   RR_TURN_RIGHT,
-  RR_U_TURN
+  RR_U_TURN,
+  END
 } RRRobotMove ;
 
 /* Robot status (mostly orientation) */

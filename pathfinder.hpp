@@ -3,14 +3,15 @@
  *
  *       Filename:  pathfinder.hpp
  *
- *    Description:  header du pathfinder
+ *    Description:  pathfinder header file
  *
  *        Version:  1.0
  *        Created:  25/02/16 16:20:25
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Quintard Livaï (dyavil), livai.quintard@etu.univ-lyon1.fr
+ *         Author:  Quintard Livaï, livai.quintard@etu.univ-lyon1.fr 11508352
+ *                  Georges Antoine, antoine.georges@etu.univ-lyon1.fr 11200730
  *   Organization:  
  *
  * =====================================================================================
@@ -54,9 +55,30 @@ void create_graph(RRBoard board, graph & g);
  */
 int quicker_pace(graph & g);
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  get_graph_state
+ *  Description:  return an int representing the board block location
+ * =====================================================================================
+ */
 int get_graph_state(int column, int line, RRBoard & board);
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  graph_to_string
+ *  Description:  write a string representation of the graph
+ * =====================================================================================
+ */
 std::string graph_to_string(graph & g);
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  graph_to_file
+ *  Description:  take the previous function result and write it in a file
+ * =====================================================================================
+ */
 void graph_to_file(graph & g);
 

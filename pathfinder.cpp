@@ -33,11 +33,14 @@ int get_position(movement & m)
 void create_graph(RRBoard board, graph & g)
 {
     unsigned int updated_state = 0;
+    unsigned int step = sizeof(RRTile);
+	//std::cout << sizeof(RRTile) << std::endl;
     RRRobot temp_robot;
     RRTile *current_tile = board.tiles;
-    for(unsigned int i = 0; i <= board.tile_size; i++)
+	std::cout << current_tile->line << ", y :" << current_tile->column << std::endl;
+    for(unsigned int i = 1; i <= board.tile_size; i++)
     {
-        for(unsigned int j = 0; j <= 4; j++)
+        for(unsigned int j = 0; j < 4; j++)
         {
             movement start;
             start.current_state = updated_state;
@@ -62,13 +65,15 @@ void create_graph(RRBoard board, graph & g)
             }
             char new_action = 'a';
             RRRobot savedtemp_robot;
-            for(unsigned int rmove = RR_MOVE_FORWARD_1; rmove != RR_U_TURN; rmove++)
+            for(int rmove = RR_MOVE_FORWARD_1; rmove != END; rmove++)
             {
                 savedtemp_robot = temp_robot;
+		
                 rr_board_play(board, savedtemp_robot, (RRRobotMove)rmove); 
                 start.action = new_action;
                 //convert line+column to state in graph
                 unsigned int got_state = get_graph_state(savedtemp_robot.column, savedtemp_robot.line, board);
+		
                 start.arrival_state = got_state;
                 switch(savedtemp_robot.status){
                     case RR_ROBOT_E:
@@ -92,22 +97,24 @@ void create_graph(RRBoard board, graph & g)
             }
 
         }
+		current_tile = (RRTile*)((char*)current_tile + step);
     }
 }
 
 int get_graph_state(int column, int line, RRBoard & board)
 {
-    int step = sizeof(RRTile);
-    int count = 0;
+    unsigned int step = sizeof(RRTile);
+    unsigned int count = 0;
     RRTile *current_tile = board.tiles;
     for(unsigned int i = 0; i < board.tile_size; i++)
     {
         if(current_tile->line == line && current_tile->column == column)
         {
+            
             return count*4;
         }
         count++;
-        current_tile = current_tile + count*step;
+        current_tile = (RRTile*)((char*)current_tile + step);
     }
     return -1;
 }

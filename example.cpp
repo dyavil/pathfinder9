@@ -1,4 +1,5 @@
 #include "board.hpp"
+#include "pathfinder.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -51,6 +52,10 @@ int main (int argc, char **argv)
   RRBoard board ;
 
   rr_board_init(board, "board.txt") ;
+    
+  graph g;
+  create_graph(board, g);
+  graph_to_file(g);
 
   if(!board.tile_size) {
     std::printf("the board has no tile\n") ;
