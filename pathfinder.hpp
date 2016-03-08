@@ -62,7 +62,8 @@ int quicker_pace(graph & g);
  *  Description:  return an int representing the board block location
  * =====================================================================================
  */
-int get_graph_state(int column, int line, RRBoard & board);
+int get_graph_state(RRBoard & board, RRRobot & robot);
+int get_graph_state_range(int column, int line, RRBoard & board);
 
 
 /* 

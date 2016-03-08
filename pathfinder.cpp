@@ -72,26 +72,9 @@ void create_graph(RRBoard board, graph & g)
                 rr_board_play(board, savedtemp_robot, (RRRobotMove)rmove); 
                 start.action = new_action;
                 //convert line+column to state in graph
-                unsigned int got_state = get_graph_state(savedtemp_robot.column, savedtemp_robot.line, board);
-		
+                unsigned int got_state = get_graph_state(board, savedtemp_robot);	
                 start.arrival_state = got_state;
-                switch(savedtemp_robot.status){
-                    case RR_ROBOT_E:
-                        start.arrival_state += 3;
-                        break;
-                    case RR_ROBOT_N:
-                        start.arrival_state += 2;
-                        break;
-                    case RR_ROBOT_W :
-                        start.arrival_state += 1;
-                        break;
-                    case RR_ROBOT_S :
-                        start.arrival_state += 0;
-                        break;
-                    default : 
-                        start.arrival_state = 4000000000;
-                        break;
-            }
+
                 new_action++;
                 g.push_back(start);
             }
@@ -101,7 +84,31 @@ void create_graph(RRBoard board, graph & g)
     }
 }
 
-int get_graph_state(int column, int line, RRBoard & board)
+
+int get_graph_state(RRBoard & board, RRRobot & robot)
+{
+	unsigned int res = get_graph_state_range(robot.column, robot.line, board);
+	switch(robot.status){
+                    case RR_ROBOT_E:
+                        res += 3;
+                        break;
+                    case RR_ROBOT_N:
+                        res += 2;
+                        break;
+                    case RR_ROBOT_W :
+                        res += 1;
+                        break;
+                    case RR_ROBOT_S :
+                        res += 0;
+                        break;
+                    default : 
+                        res = 4000000000;
+                        break;
+            }
+	return res;
+}
+
+int get_graph_state_range(int column, int line, RRBoard & board)
 {
     unsigned int step = sizeof(RRTile);
     unsigned int count = 0;
@@ -117,7 +124,9 @@ int get_graph_state(int column, int line, RRBoard & board)
         current_tile = (RRTile*)((char*)current_tile + step);
     }
     return -1;
+	
 }
+
 
 std::string graph_to_string(graph & g)
 {
@@ -159,3 +168,19 @@ void graph_to_file(graph & g)
 	}
 
 }
+
+
+void shorter_path(graph & g, RRRobot & robot, RRBoard & board)
+{
+    movement start;
+    unsigned int cur_state = get_graph_state(board, robot);
+    start = g[1+(cur_state*7)];
+    char action = 'a';
+    for(int i = 0; i < 7; i++)
+    {
+        
+        action++;
+    }
+
+}
+
