@@ -75,7 +75,6 @@ void create_graph(RRBoard board, graph & g)
                 start.arrival_state = got_state;
 
                 new_action++;
-                start.weight = 1;
                 g.graph_vector.push_back(start);
             }
 
@@ -221,51 +220,10 @@ void graph_to_file(graph & g)
 }
 
 
-class movement_compare
-{
-    bool reverse;
-public:
-    movement_compare(const bool& revparam=false)
-    {reverse=revparam;}
-    bool operator()(const movement & mvt, const movement & mvt2)const
-    {
-        if(reverse) return (mvt.weight>mvt2.weight);
-        else return (mvt.weight<mvt2.weight);
-    }
-};
-
 
 movement shortest_path(graph & g, RRRobot & robot_start, RRRobot & robot_goal)
 {
-    //TODO: add unsigned int weight_from_start to movement
-    //set it to max int
-    //add done movement vector
     movement init = robotpos_to_movement(robot_start, g);
-    unsigned int dist_to_start = 0;
-    //init.weight_from_start = 0;
-    std::priority_queue<movement, std::vector<movement>, movement_compare> queue;
-    queue.push(init);
-    //updt done vector
-    while(!queue.empty())
-    {
-        movement temp_mov = queue.top();
-        if(temp_mov.current_state == robotpos_to_movement(robot_goal, g).current_state) return temp_mov;
-        queue.pop();
-        //dist_to_start = g.graph_vector[temp_mov.current_state*7].weight_from_start;
-        for(unsigned int i = 1; i <= 7; i++)
-        {
-            unsigned int edge_weight = g.graph_vector[temp_mov.current_state*7+i].weight;
-            /*if(g.graph_vector[temp_mov.current_state*7+i].weight_from_start > (dist_to_start+edge_weight))
-            {
-               g.graph_vector[temp_mov.current_state*7+i].weight_from_start = dist_to_start + edge_weight;
-
-            }
-            if(g.graph_vector[temp_mov.current_state*7+i] is in done vector)
-            {
-                queue.push(g.gra......);
-            }*/
-        }
-    }
 }
 
 
