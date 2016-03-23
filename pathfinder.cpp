@@ -210,7 +210,7 @@ void graph_to_file(graph & g)
 	
 	if (!os)
 	{
-	
+
 		std::cerr << "Error" << std::endl;
 		
 	}
@@ -241,7 +241,80 @@ bool mov_in_vector(std::vector<movement> & v, movement & m)
     return false;
 }
 
-movement shortest_path(graph & g, RRRobot & robot_start, RRRobot & robot_goal)
+bool sort_mov(movement m1, movement m2)
+{
+    return m1.weight_from_start < m2.weight_from_start;
+}
+
+void dijkstra(graph & g, RRRobot & robot_start, RRRobot & robot_goal, std::vector<movement> & res)
+{
+    unsigned int ds = 0;
+    movement current_mov = robotpos_to_movement(robot_start, g);
+    current_mov.weight_from_start = ds;
+    std::cout << "Dijkstra" << std::endl;
+    std::vector<movement> queue;
+    std::set<unsigned int> done;
+    for (std::vector<movement>::iterator it = g.graph_vector.begin(); it != g.graph_vector.end(); ++it)
+    {
+        it->weight_from_start = -1;
+    }
+    queue.push_back(current_mov);
+    done.insert(current_mov.current_state);
+    while(!queue.empty())
+    {
+        std::cout << "d loopw" << std::endl;
+        //get the first vetor's element
+        current_mov = queue.front();
+        //then remove it
+        res.push_back(current_mov);
+        queue.erase(queue.begin());
+
+        for(unsigned int i = 0; i < 7; ++i)
+        {
+            unsigned int weight_from_prec = g.graph_vector[current_mov.current_state*7+i].weight;
+            unsigned int compare_weight = weight_from_prec + g.graph_vector[current_mov.current_state*7+i].weight_from_start;
+            if(g.graph_vector[current_mov.current_state*7+i].arrival_state != 4000000000)
+            {
+                if(g.graph_vector[current_mov.arrival_state*7].weight_from_start > compare_weight)
+                {
+                    for(unsigned int j = 0; j < 7; ++j)
+                    {
+                        g.graph_vector[current_mov.arrival_state*7+j].weight_from_start = compare_weight;
+                    }
+
+                }
+
+
+                if(done.find(g.graph_vector[current_mov.current_state*7+i].arrival_state) == done.end())
+                {
+                    queue.push_back(g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7]);
+                    done.insert(g.graph_vector[current_mov.current_state*7+i].arrival_state); 
+                }
+                else
+                {
+                    for(unsigned int j = 0; j < queue.size(); j++)
+                    {
+                        //std::cout << "d loop f2 : " << it->weight_from_start << std::endl;
+                        if(queue[j].current_state == g.graph_vector[current_mov.current_state*7+i].arrival_state)
+                        {
+                            std::cout << "d loop f2 if: " << std::endl;
+                            queue[j].weight_from_start = g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7].weight_from_start;
+                            j = queue.size();
+                        }
+                    }  
+                    //std::cout << "d loop f2 if: " << std::endl;
+                }
+                std::cout << "d loop f1 " << queue.size() << std::endl;
+                std::sort(queue.begin(), queue.end(), sort_mov);
+            }
+        }
+
+    }
+
+}
+
+
+/*  movement shortest_path(graph & g, RRRobot & robot_start, RRRobot & robot_goal)
 {
     //TODO: add unsigned int weight_from_start to movement
     //set it to max int
@@ -282,7 +355,7 @@ movement shortest_path(graph & g, RRRobot & robot_start, RRRobot & robot_goal)
         //}
     }
     return init;
-}
+}*/
 
 
 

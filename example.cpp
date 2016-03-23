@@ -76,11 +76,14 @@ int main (int argc, char **argv)
   robot_goal.line = board.tiles[24].line ;
   robot_goal.column = board.tiles[24].column ;
   robot_goal.status = RR_ROBOT_N;
+	
+  std::vector<movement> res;
+  dijkstra(g, robot, robot_goal, res);
 
-	movement res = shortest_path(g, robot, robot_goal);
+	/*movement res = shortest_path(g, robot, robot_goal);
 	std::cout << res.arrival_state << std::endl;
 	std::cout << res.action << std::endl;
-	std::cout << res.current_state << std::endl;
+	std::cout << res.current_state << std::endl;*/
 
   const RRRobotMove moves[13] =
   {

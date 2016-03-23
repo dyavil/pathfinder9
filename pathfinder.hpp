@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 #include <vector>
+#include <set>
+#include <algorithm>
 #include <queue>
 #include <string>
 #include <sstream>
@@ -111,6 +113,8 @@ void graph_to_file(graph & g);
 
 //------------------------------------------------------------------------------------------------//
 
+
+void dijkstra(graph & g, RRRobot & robot_start, RRRobot & robot_goal, std::vector<movement> & res);
 
 /* 
  * ===  FUNCTION  ======================================================================
