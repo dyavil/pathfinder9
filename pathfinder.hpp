@@ -33,6 +33,7 @@ typedef struct movement{
     char action;/* movement */
     unsigned int arrival_state;/* position and direction on the board at the end of action */
     unsigned int weight;/* edge weight */
+    unsigned int weight_from_start;
 }movement;
 
 //board/graph correspondence array

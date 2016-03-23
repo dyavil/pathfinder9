@@ -56,6 +56,7 @@ int main (int argc, char **argv)
   graph g;
   create_graph(board, g);
   graph_to_file(g);
+  
 
   if(!board.tile_size) {
     std::printf("the board has no tile\n") ;
@@ -65,10 +66,21 @@ int main (int argc, char **argv)
   RRRobot robot ;
   robot.line = board.tiles[0].line ;
   robot.column = board.tiles[0].column ;
-  robot.status = RR_ROBOT_N ;
+  robot.status = RR_ROBOT_S ;
 
   RRRobot prev_robot ;
   robot_cpy(robot, prev_robot) ;
+
+
+	RRRobot robot_goal ;
+  robot_goal.line = board.tiles[24].line ;
+  robot_goal.column = board.tiles[24].column ;
+  robot_goal.status = RR_ROBOT_N;
+
+	movement res = shortest_path(g, robot, robot_goal);
+	std::cout << res.arrival_state << std::endl;
+	std::cout << res.action << std::endl;
+	std::cout << res.current_state << std::endl;
 
   const RRRobotMove moves[13] =
   {

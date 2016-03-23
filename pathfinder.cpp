@@ -73,7 +73,8 @@ void create_graph(RRBoard board, graph & g)
                 //convert line+column to state in graph
                 unsigned int got_state = get_graph_state(board, savedtemp_robot);	
                 start.arrival_state = got_state;
-
+                start.weight_from_start = -1;
+                start.weight = 1;
                 new_action++;
                 start.weight = 1;
                 g.graph_vector.push_back(start);
@@ -82,6 +83,7 @@ void create_graph(RRBoard board, graph & g)
         }
 		current_tile = (RRTile*)((char*)current_tile + step);
     }
+    build_corresp_array(board, g);
 }
 
 
@@ -96,6 +98,7 @@ void build_corresp_array(RRBoard & board, graph & g)
         temp_item.column = current_tile->column;
         temp_item.line = current_tile->line;
         temp_item.movement_id = count;
+        g.graph_to_board.push_back(temp_item);
         count = count+4;
         current_tile = (RRTile*)((char*)current_tile + step);
     }
@@ -221,51 +224,64 @@ void graph_to_file(graph & g)
 }
 
 
-class movement_compare
+struct movement_compare
 {
-    bool reverse;
-public:
-    movement_compare(const bool& revparam=false)
-    {reverse=revparam;}
     bool operator()(const movement & mvt, const movement & mvt2)const
     {
-        if(reverse) return (mvt.weight>mvt2.weight);
-        else return (mvt.weight<mvt2.weight);
+        return (mvt.weight_from_start > mvt2.weight_from_start);
     }
 };
 
+bool mov_in_vector(std::vector<movement> & v, movement & m)
+{
+    for(unsigned int i = 0; i < v.size(); i++)
+    {
+        if(v[i].current_state == m.current_state) return true;
+    }
+    return false;
+}
 
 movement shortest_path(graph & g, RRRobot & robot_start, RRRobot & robot_goal)
 {
     //TODO: add unsigned int weight_from_start to movement
     //set it to max int
     //add done movement vector
+    std::vector<movement> done_mvt;
     movement init = robotpos_to_movement(robot_start, g);
     unsigned int dist_to_start = 0;
-    //init.weight_from_start = 0;
+    init.weight_from_start = 0;
     std::priority_queue<movement, std::vector<movement>, movement_compare> queue;
     queue.push(init);
     //updt done vector
+    std::cout << "init " << init.current_state << ", " << init.arrival_state << std::endl;
     while(!queue.empty())
     {
         movement temp_mov = queue.top();
-        if(temp_mov.current_state == robotpos_to_movement(robot_goal, g).current_state) return temp_mov;
         queue.pop();
-        //dist_to_start = g.graph_vector[temp_mov.current_state*7].weight_from_start;
-        for(unsigned int i = 1; i <= 7; i++)
-        {
-            unsigned int edge_weight = g.graph_vector[temp_mov.current_state*7+i].weight;
-            /*if(g.graph_vector[temp_mov.current_state*7+i].weight_from_start > (dist_to_start+edge_weight))
+       // if(temp_mov.arrival_state != 4000000000)
+        //{
+            std::cout << temp_mov.current_state << " yyyy " << queue.size() << "size" << temp_mov.arrival_state << std::endl;
+            if(temp_mov.current_state == robotpos_to_movement(robot_goal, g).current_state) return temp_mov;
+            dist_to_start = g.graph_vector[temp_mov.current_state*7].weight_from_start;
+            for(unsigned int i = 0; i < 7; i++)
             {
-               g.graph_vector[temp_mov.current_state*7+i].weight_from_start = dist_to_start + edge_weight;
+                unsigned int edge_weight = g.graph_vector[temp_mov.current_state*7+i].weight;
+                if(g.graph_vector[temp_mov.current_state*7+i].weight_from_start > (dist_to_start+edge_weight))
+                {
+                    g.graph_vector[temp_mov.current_state*7+i].weight_from_start = dist_to_start + edge_weight;
 
+                }
+                if(g.graph_vector[temp_mov.current_state*7+i].arrival_state != 4000000000 && !mov_in_vector(done_mvt, g.graph_vector[g.graph_vector[temp_mov.current_state*7+i].arrival_state*7]))
+                {
+                    queue.push(g.graph_vector[g.graph_vector[temp_mov.current_state*7+i].arrival_state*7]);
+                    //std::cout << "add  " << queue.top().current_state << std::endl;
+                    done_mvt.push_back(g.graph_vector[g.graph_vector[temp_mov.current_state*7+i].arrival_state*7]);
+                }
             }
-            if(g.graph_vector[temp_mov.current_state*7+i] is in done vector)
-            {
-                queue.push(g.gra......);
-            }*/
-        }
+
+        //}
     }
+    return init;
 }
 
 
