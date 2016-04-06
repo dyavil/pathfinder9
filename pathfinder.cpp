@@ -266,7 +266,7 @@ void dijkstra(graph & g, RRRobot & robot_start, RRRobot & robot_goal, std::vecto
         //get the first vetor's element
         current_mov = queue.front();
         //then remove it
-        res.push_back(current_mov);
+        //res.push_back(current_mov);
         queue.erase(queue.begin());
 
         for(unsigned int i = 0; i < 7; ++i)
@@ -275,17 +275,18 @@ void dijkstra(graph & g, RRRobot & robot_start, RRRobot & robot_goal, std::vecto
             unsigned int compare_weight = weight_from_prec + g.graph_vector[current_mov.current_state*7+i].weight_from_start;
             if(g.graph_vector[current_mov.current_state*7+i].arrival_state != 4000000000)
             {
-                if(g.graph_vector[current_mov.arrival_state*7].weight_from_start > compare_weight)
+                if(g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7].weight_from_start > compare_weight)
                 {
                     for(unsigned int j = 0; j < 7; ++j)
                     {
-                        g.graph_vector[current_mov.arrival_state*7+j].weight_from_start = compare_weight;
+                        std::cout << "arrival * 7 " << g.graph_vector[current_mov.current_state*7+i].arrival_state*7+j << std::endl;
+                        g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7+j].weight_from_start = compare_weight;
                     }
 
                 }
 
 
-                if(done.find(g.graph_vector[current_mov.current_state*7+i].arrival_state) == done.end())
+                if(done.find(g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7].current_state) == done.end())
                 {
                     queue.push_back(g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7]);
                     done.insert(g.graph_vector[current_mov.current_state*7+i].arrival_state); 
@@ -307,8 +308,10 @@ void dijkstra(graph & g, RRRobot & robot_start, RRRobot & robot_goal, std::vecto
                 std::cout << "d loop f1 " << queue.size() << std::endl;
                 std::sort(queue.begin(), queue.end(), sort_mov);
             }
+
         }
 
+        res.push_back(current_mov);
     }
 
 }

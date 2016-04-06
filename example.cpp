@@ -72,13 +72,17 @@ int main (int argc, char **argv)
   robot_cpy(robot, prev_robot) ;
 
 
-	RRRobot robot_goal ;
+  RRRobot robot_goal ;
   robot_goal.line = board.tiles[24].line ;
   robot_goal.column = board.tiles[24].column ;
   robot_goal.status = RR_ROBOT_N;
 	
   std::vector<movement> res;
   dijkstra(g, robot, robot_goal, res);
+  for(unsigned int i = 0; i < res.size(); i++)
+  {
+    std::cout << "res i " << i << " is current : " << res[i].current_state << " arrival: " << res[i].arrival_state << std::endl;
+  }
 
 	/*movement res = shortest_path(g, robot, robot_goal);
 	std::cout << res.arrival_state << std::endl;
