@@ -124,7 +124,7 @@ void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res);
  */
 std::string get_way_to(RRRobot & robot_goal, std::vector<movement> ways, graph g, std::vector<RRRobotMove> & rmoves);
 
-std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> actions);
+std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> & actions, int & nb_mvt);
 
 
 

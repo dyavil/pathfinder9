@@ -92,13 +92,14 @@ int main (int argc, char **argv)
   RRRobotMove trmove[]= {(RRRobotMove)0, (RRRobotMove)5, (RRRobotMove)2, (RRRobotMove)3, (RRRobotMove)1, (RRRobotMove)2, (RRRobotMove)3, (RRRobotMove)1, (RRRobotMove)3};
   std::vector<RRRobotMove> actions;
   std::vector<RRRobotMove> finalac;
-  actions.assign(trmove, trmove+9);
-
-  //finalac = artificial_player(board, g, robot, robot_goal, actions);
+  actions.insert(actions.begin(), trmove, trmove+9);
+  int nb_mvt;
+  finalac = artificial_player(board, g, robot, robot_goal, actions, nb_mvt);
   for(unsigned int i = 0; i < finalac.size(); i++)
   {
      std::cout << finalac[i] << ", " << std::endl;
   }
+  std::cout << nb_mvt << std::endl;
 
 	/*movement res = shortest_path(g, robot, robot_goal);
 	std::cout << res.arrival_state << std::endl;

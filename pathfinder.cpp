@@ -67,7 +67,7 @@ void create_graph(RRBoard board, graph & g)
             for(int rmove = RR_MOVE_FORWARD_1; rmove != END; rmove++)
             {
                 savedtemp_robot = temp_robot;
-		
+
                 rr_board_play(board, savedtemp_robot, (RRRobotMove)rmove); 
                 start.action = new_action;
                 //convert line+column to state in graph
@@ -101,29 +101,29 @@ void build_corresp_array(RRBoard & board, graph & g)
         count = count+4;
         current_tile = (RRTile*)((char*)current_tile + step);
     }
-    
+
 }
 
 int get_graph_state(RRBoard & board, RRRobot & robot)
 {
 	unsigned int res = get_graph_state_range(robot.column, robot.line, board);
 	switch(robot.status){
-                    case RR_ROBOT_E:
-                        res += 3;
-                        break;
-                    case RR_ROBOT_N:
-                        res += 2;
-                        break;
-                    case RR_ROBOT_W :
-                        res += 1;
-                        break;
-                    case RR_ROBOT_S :
-                        res += 0;
-                        break;
-                    default : 
-                        res = 4000000000;
-                        break;
-            }
+        case RR_ROBOT_E:
+            res += 3;
+            break;
+        case RR_ROBOT_N:
+            res += 2;
+            break;
+        case RR_ROBOT_W :
+            res += 1;
+            break;
+        case RR_ROBOT_S :
+            res += 0;
+            break;
+        default : 
+            res = 4000000000;
+            break;
+    }
 	return res;
 }
 
@@ -136,20 +136,21 @@ int get_graph_state_range(int column, int line, RRBoard & board)
     {
         if(current_tile->line == line && current_tile->column == column)
         {
-            
+
             return count*4;
         }
         count++;
         current_tile = (RRTile*)((char*)current_tile + step);
     }
     return -1;
-	
+
 }
 
 
 movement robotpos_to_movement(RRRobot & robot, graph & g)
 {
     movement res;
+    bool test = false;
     for(unsigned int i = 0; i < g.graph_to_board.size(); i++)
     {
         if(g.graph_to_board[i].column == robot.column && g.graph_to_board[i].line == robot.line)
@@ -169,13 +170,16 @@ movement robotpos_to_movement(RRRobot & robot, graph & g)
                     tempid += 0;
                     break;
                 default : 
+		            test = true;
                     break;
             }
             res = g.graph_vector[tempid*7];
+	        if(test) res.current_state = 4000000000;
             return res;
 
         }
     }
+    res.current_state = 4000000000;
     return res;
 }
 
@@ -183,20 +187,20 @@ movement robotpos_to_movement(RRRobot & robot, graph & g)
 
 std::string graph_to_string(graph & g)
 {
-	
+
 	std::stringstream ss;
 	std::string str;
 	movement tmp;
-	
+
 	for(size_t i = 0; i < g.graph_vector.size(); ++i)
 	{
 		tmp = g.graph_vector[i];
 		ss << tmp.current_state << " " << tmp.action << " " << tmp.arrival_state << "\n";
-	
+
 	}
-	
+
 	str = ss.str();
-	
+
 	return str;
 
 }
@@ -206,18 +210,18 @@ void graph_to_file(graph & g)
 {
 
 	std::ofstream os("./log/log.txt");
-	
+
 	if (!os)
 	{
 
 		std::cerr << "Error" << std::endl;
-		
+
 	}
 	else
 	{  
-	
+
   		os << graph_to_string(g); 
-  		 
+
 	}
 
 }
@@ -402,14 +406,16 @@ std::string get_way_to(RRRobot & goal, std::vector<movement> ways, graph g, std:
     return resf;
 }
 
-std::vector<RRRobotMove> artificial_player(RRBoard board,graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> actions)
+std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> & actions, int & nb_mvt)
 {
     std::vector<movement> ways;
     unsigned int postemp;
+    nb_mvt = 0;
     RRRobot robtemp = robot;
     std::vector<RRRobotMove> action_final;
     std::vector<RRRobotMove> best;
     std::vector<RRRobotMove> best_by_dijkstra;
+    std::string dijkstra_movs = "";
 
     best = actions;
     unsigned int weight_dijkstra = 4000000000;
@@ -427,7 +433,7 @@ std::vector<RRRobotMove> artificial_player(RRBoard board,graph g, RRRobot & robo
         for(unsigned int j = 0; j < 9; j++)
         {
 	        robtemp = robtempj;
-            if(j!= i)
+            if(j!= i && robotpos_to_movement(robtemp, g).current_state != 4000000000)
             {
                 action_final.erase(action_final.begin()+1, action_final.end());
                 action_final.push_back(actions[j]);
@@ -437,45 +443,48 @@ std::vector<RRRobotMove> artificial_player(RRBoard board,graph g, RRRobot & robo
                 for(unsigned int k = 0; k < 9; k++)
                 {
 		            robtemp = robtempk;
-                    if(j != k && i != k)
+                    if(j != k && i != k && robotpos_to_movement(robtemp, g).current_state != 4000000000)
                     {
                         action_final.erase(action_final.begin()+2, action_final.end());
                         action_final.push_back(actions[k]);
                         rr_board_play(board, robtemp, (RRRobotMove)actions[k]);
-                        if(robotpos_to_movement(robtemp, g).current_state == goalmov.current_state && action_final.size() < best.size()) best = action_final;
+                        if((robotpos_to_movement(robtemp, g).current_state == goalmov.current_state) && (action_final.size() < best.size())) best = action_final;
 			            RRRobot robtempl = robtemp;
                         for(unsigned int l = 0; l < 9; l++)
                         {
 			                robtemp = robtempl;
-                            if(l != i && l != j && l != k)
+                            if(l != i && l != j && l != k && robotpos_to_movement(robtemp, g).current_state != 4000000000)
                             {
                                 action_final.erase(action_final.begin()+3, action_final.end());
                                 action_final.push_back(actions[l]);
                                 rr_board_play(board, robtemp, (RRRobotMove)actions[l]);
                                 if(robotpos_to_movement(robtemp, g).current_state == goalmov.current_state && action_final.size() < best.size()) best = action_final;
 				                RRRobot robtempm = robtemp;
-                               for(unsigned int m = 0; m < 9; m++)
+                                for(unsigned int m = 0; m < 9; m++)
                                 {
 				                    robtemp = robtempm;
-                                    if(m != i && m != j && m != k && m != l)
+                                    if(m != i && m != j && m != k && m != l && robotpos_to_movement(robtemp, g).current_state != 4000000000)
                                     {
                                         action_final.erase(action_final.begin()+4, action_final.end());
                                         action_final.push_back(actions[m]);
                                         rr_board_play(board, robtemp, (RRRobotMove)actions[m]);
-                                        if(robotpos_to_movement(robtemp, g).current_state == goalmov.current_state && action_final.size() < best.size())
+                                        if(robotpos_to_movement(robtemp, g).current_state != 4000000000 && robotpos_to_movement(robtemp, g).current_state == goalmov.current_state && action_final.size() < best.size())
                                         {
                                             best = action_final;
                                         }
                                         else{
-                                            std::cout << std::endl;
-                                            std::vector<movement> temp_dijkstra;
-                                            dijkstra(g, robtemp, temp_dijkstra);
-                                            std::vector<RRRobotMove> current_by_dijkstra;
-                                            get_way_to(robot, temp_dijkstra, g, current_by_dijkstra);
-                                            if(current_by_dijkstra.size() < weight_dijkstra)
-                                            {
-                                                weight_dijkstra = current_by_dijkstra.size();
-                                                best_by_dijkstra = best;
+					                        if(robotpos_to_movement(robtemp, g).current_state != 4000000000){
+                                                //std::cout << std::endl;
+                                                std::vector<movement> temp_dijkstra;
+                                                dijkstra(g, robtemp, temp_dijkstra);
+                                                std::vector<RRRobotMove> current_by_dijkstra;
+                                                std::string strtmp = get_way_to(goal, temp_dijkstra, g, current_by_dijkstra);
+                                                if(current_by_dijkstra.size() < weight_dijkstra)
+                                                {
+                                                    weight_dijkstra = current_by_dijkstra.size();
+                                                    best_by_dijkstra = action_final;
+                                                    dijkstra_movs = strtmp;
+                                                }
                                             }
                                         }
 
@@ -493,7 +502,31 @@ std::vector<RRRobotMove> artificial_player(RRBoard board,graph g, RRRobot & robo
     if(best.size() > 5)
     {
         best = best_by_dijkstra;
+        nb_mvt = 5 + weight_dijkstra;
+    }else{
+        nb_mvt = best.size();
+        dijkstra_movs = "";
     }
+    
+    std::vector<RRRobotMove> temp_ac = actions;
+    for(int n = 0; n < best.size(); n++)
+    {
+	    for(int o = 0; o < 9; o++)
+	    {
+	        if(temp_ac[o] == best[n])
+	        {
+                temp_ac[o] = (RRRobotMove)7;
+	            o = 9;
+	        }
+	    }
+    }
+    for(int n = 0; n < 9; n++)
+    {
+		if(temp_ac[n] != (RRRobotMove)7){
+		    best.push_back(temp_ac[n]);
+		}
+    }
+    std::cout << dijkstra_movs << std::endl;
     return best;
 }
 
