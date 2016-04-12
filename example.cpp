@@ -78,10 +78,26 @@ int main (int argc, char **argv)
   robot_goal.status = RR_ROBOT_N;
 	
   std::vector<movement> res;
-  dijkstra(g, robot, robot_goal, res);
+  dijkstra(g, robot, res);
   for(unsigned int i = 0; i < res.size(); i++)
   {
-    std::cout << "res i " << i << " is current : " << res[i].current_state << " arrival: " << res[i].arrival_state << std::endl;
+    std::cout << "state  " << res[i].current_state << " can go to " << res[i].arrival_state << " taking " << res[i].weight_from_start << " moves from start" << std::endl;
+  }
+
+  std::string r;
+  std::vector<RRRobotMove> actions_for_robot;
+  r = get_way_to(robot_goal, res, g, actions_for_robot);
+  std::cout << r << std::endl;
+
+  RRRobotMove trmove[]= {(RRRobotMove)0, (RRRobotMove)5, (RRRobotMove)2, (RRRobotMove)3, (RRRobotMove)1, (RRRobotMove)2, (RRRobotMove)3, (RRRobotMove)1, (RRRobotMove)3};
+  std::vector<RRRobotMove> actions;
+  std::vector<RRRobotMove> finalac;
+  actions.assign(trmove, trmove+9);
+
+  //finalac = artificial_player(board, g, robot, robot_goal, actions);
+  for(unsigned int i = 0; i < finalac.size(); i++)
+  {
+     std::cout << finalac[i] << ", " << std::endl;
   }
 
 	/*movement res = shortest_path(g, robot, robot_goal);

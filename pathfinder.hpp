@@ -114,15 +114,17 @@ void graph_to_file(graph & g);
 //------------------------------------------------------------------------------------------------//
 
 
-void dijkstra(graph & g, RRRobot & robot_start, RRRobot & robot_goal, std::vector<movement> & res);
+void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res);
 
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  shortest_path
+ *         Name:  get_way_to
  *  Description:  using dijkstra alogorithm, determine the shortest path
  * =====================================================================================
  */
-movement shortest_path(graph & g, RRRobot & robot_start, RRRobot & robot_goal);
+std::string get_way_to(RRRobot & robot_goal, std::vector<movement> ways, graph g, std::vector<RRRobotMove> & rmoves);
+
+std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> actions);
 
 
 
