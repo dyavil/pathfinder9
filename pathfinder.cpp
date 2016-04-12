@@ -150,7 +150,7 @@ int get_graph_state_range(int column, int line, RRBoard & board)
 movement robotpos_to_movement(RRRobot & robot, graph & g)
 {
     movement res;
-    bool test = false;
+    bool test = false;/* si jamais le robot est mort */
     for(unsigned int i = 0; i < g.graph_to_board.size(); i++)
     {
         if(g.graph_to_board[i].column == robot.column && g.graph_to_board[i].line == robot.line)
@@ -251,6 +251,7 @@ bool sort_mov(movement m1, movement m2)
 
 void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res)
 {
+    /* Initialization part */
     unsigned int ds = 0;
     movement current_mov = robotpos_to_movement(robot_start, g);
     current_mov.weight_from_start = ds;
@@ -267,20 +268,23 @@ void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res)
     queue.push_back(current_mov);
     done.insert(current_mov.current_state);
     current_mov.weight_from_start = -1;
+    
+    /* While there is a node to handle */
     while(!queue.empty())
     {
         //get the first vetor's element
         current_mov = queue.front();
         //then remove it
-        //res.push_back(current_mov);
         queue.erase(queue.begin());
 
         for(unsigned int i = 0; i < 7; ++i)
         {
             unsigned int weight_from_prec = current_mov.weight;
             unsigned int compare_weight = weight_from_prec + current_mov.weight_from_start;
+            //check if there is no dead arrival state
             if(g.graph_vector[current_mov.current_state*7+i].arrival_state != 4000000000)
             {
+                //if dw > dv + dv,w
                 if(g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7].weight_from_start > compare_weight)
                 {
                     for(unsigned int j = 0; j < 7; ++j)
@@ -290,7 +294,7 @@ void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res)
 
                 }
 
-
+                //if w is tested for the first time
                 if(done.find(g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7].current_state) == done.end())
                 {
                     queue.push_back(g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7]);
@@ -300,24 +304,22 @@ void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res)
                 {
                     for(unsigned int j = 0; j < queue.size(); j++)
                     {
-                        //std::cout << "d loop f2 : " << it->weight_from_start << std::endl;
                         if(queue[j].current_state == g.graph_vector[current_mov.current_state*7+i].arrival_state)
                         {
                             queue[j].weight_from_start = g.graph_vector[g.graph_vector[current_mov.current_state*7+i].arrival_state*7].weight_from_start;
                             j = queue.size();
                         }
                     }  
-                    //std::cout << "d loop f2 if: " << std::endl;
                 }
                 std::sort(queue.begin(), queue.end(), sort_mov);
             }
 
         }
+        //pushing each result(depending on the action) into the res vector
         for(unsigned int i = 0; i < 7; i++)
         {
             res.push_back(g.graph_vector[current_mov.current_state*7+i]);
         }
-        //res.push_back(current_mov);
     }
 
 }
@@ -343,15 +345,18 @@ std::string get_way_to(RRRobot & goal, std::vector<movement> ways, graph g, std:
         }
     }
     min += 1;
+    //resulting string (more understandable than vector of numbers)
     res += "On arrive à " + std::to_string(tm.arrival_state) + " en " + std::to_string(min) + " en passant par " + std::to_string(tm.current_state) + ", ";
     rr += tm.action;
+    //if we cannot reach it
     if(min == 4000000001)
     {
         resf = "Inatteignable";
         rmoves.clear();
         return resf;
     }
-    //std::cout << std::to_string(min) << std::endl;
+    
+    //running through the ways vector looking for the path
     for(unsigned int i = 0; i < min-1; i++)
     {
         for(unsigned int j = 0; j < ways.size(); j++)
@@ -365,11 +370,10 @@ std::string get_way_to(RRRobot & goal, std::vector<movement> ways, graph g, std:
             }
         }
     }
-
-    //std::cout << rr.size() << std::endl;
+    
+    //filling resulting string and movs array
     for( int i = rr.length()-1; i >=0; --i)
     {
-        //std::cout << i << std::endl;
         char t = rr[i];
         switch(t)
         {
@@ -408,6 +412,7 @@ std::string get_way_to(RRRobot & goal, std::vector<movement> ways, graph g, std:
 
 std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> & actions, int & nb_mvt)
 {
+    /* Initialization part (yeah, lot of variables) */
     std::vector<movement> ways;
     unsigned int postemp;
     nb_mvt = 0;
@@ -421,7 +426,10 @@ std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & rob
     unsigned int weight_dijkstra = 4000000000;
     movement st = robotpos_to_movement(robot, g);
     movement goalmov = robotpos_to_movement(goal, g);
+    //here we are already on the right position
     if(robotpos_to_movement(robtemp, g).current_state == goalmov.current_state) std::cout << "found" << std::endl;
+    
+    //testing each sequence of action possible while keeping the best one
     for(unsigned int i = 0; i < 9; i++)
     {
         action_final.clear();
@@ -432,7 +440,8 @@ std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & rob
         RRRobot robtempj = robtemp;
         for(unsigned int j = 0; j < 9; j++)
         {
-	        robtemp = robtempj;
+            robtemp = robtempj;
+            //testing if the robot is not dead
             if(j!= i && robotpos_to_movement(robtemp, g).current_state != 4000000000)
             {
                 action_final.erase(action_final.begin()+1, action_final.end());
@@ -473,8 +482,11 @@ std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & rob
                                             best = action_final;
                                         }
                                         else{
+                                            //here we can't reach the goal within the last 5 actions
+                                            //so we use dijkstra to get how many moves and which
+                                            //ones will it take to reach the goal.
+                                            //Again, the better path will be register
 					                        if(robotpos_to_movement(robtemp, g).current_state != 4000000000){
-                                                //std::cout << std::endl;
                                                 std::vector<movement> temp_dijkstra;
                                                 dijkstra(g, robtemp, temp_dijkstra);
                                                 std::vector<RRRobotMove> current_by_dijkstra;
@@ -507,7 +519,10 @@ std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & rob
         nb_mvt = best.size();
         dijkstra_movs = "";
     }
-    
+ 
+    //finally we put the resulting movements
+    //on the beginning of the input pool
+    //and return it
     std::vector<RRRobotMove> temp_ac = actions;
     for(int n = 0; n < best.size(); n++)
     {

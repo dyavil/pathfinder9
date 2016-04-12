@@ -119,11 +119,20 @@ void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res);
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  get_way_to
- *  Description:  using dijkstra alogorithm, determine the shortest path
+ *  Description:  using dijkstra alogorithm, determine the shortest path to robot_goal
  * =====================================================================================
  */
 std::string get_way_to(RRRobot & robot_goal, std::vector<movement> ways, graph g, std::vector<RRRobotMove> & rmoves);
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  artificial_player
+ *  Description:  taking a action pool of 9 values, generate the best 5 actions to reach 
+ *                the robot_goal position from robot position. If none of these actions
+ *                permit it, dijkstra is used to get the best one(the closest one).
+ * =====================================================================================
+ */
 std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> & actions, int & nb_mvt);
 
 

@@ -76,19 +76,34 @@ int main (int argc, char **argv)
   robot_goal.line = board.tiles[24].line ;
   robot_goal.column = board.tiles[24].column ;
   robot_goal.status = RR_ROBOT_N;
-	
+
+
+  /* On commence par lancer dijkstra qui, pour un robot start donné va calculer tous les plus courts
+   * chemins jusqu'au autre cases et stocker ces résultat dans le vector res*/
   std::vector<movement> res;
   dijkstra(g, robot, res);
+
+  /* On affiche le contenu du tableau récupéré */
   for(unsigned int i = 0; i < res.size(); i++)
   {
     std::cout << "state  " << res[i].current_state << " can go to " << res[i].arrival_state << " taking " << res[i].weight_from_start << " moves from start" << std::endl;
   }
 
+
+  /* On éxécute ensuite get_way_to qui, pour un robot goal donné et le tableau resultat issus de
+   * dijkstra, renvoie un string détaillant son parcour optimal et remplit un vector d'action de
+   * robot correspondant */
   std::string r;
   std::vector<RRRobotMove> actions_for_robot;
   r = get_way_to(robot_goal, res, g, actions_for_robot);
   std::cout << r << std::endl;
 
+
+  /* Ici, on crer un pool de mouvement possible pour le joueur artificiel. artificial_player calcule 
+   * le chemin le plus court en utilisant jusqu'a 5 de ces cartes pour atteindre goal. Si goal n'est
+   * pas atteint, on applique dijkstra pour trouver la suite de mouvements nous rapprochant le plus
+   * de l'objectif. actions est le pool d'actions; finalac est le pool resultat; nb_mvt contient 
+   * le nombre de mouvements nécessaires*/
   RRRobotMove trmove[]= {(RRRobotMove)0, (RRRobotMove)5, (RRRobotMove)2, (RRRobotMove)3, (RRRobotMove)1, (RRRobotMove)2, (RRRobotMove)3, (RRRobotMove)1, (RRRobotMove)3};
   std::vector<RRRobotMove> actions;
   std::vector<RRRobotMove> finalac;
@@ -101,10 +116,6 @@ int main (int argc, char **argv)
   }
   std::cout << nb_mvt << std::endl;
 
-	/*movement res = shortest_path(g, robot, robot_goal);
-	std::cout << res.arrival_state << std::endl;
-	std::cout << res.action << std::endl;
-	std::cout << res.current_state << std::endl;*/
 
   const RRRobotMove moves[13] =
   {
