@@ -1,0 +1,25 @@
+QUINTAR Livaï
+GEORGES Antoine
+
+Points abordés :
+	- Création du graph en mémoire (nous écrivons notre graph dans un fichier txt situé dans le répertoire log, ce fichier est écrit à la suite de la génération du graph)
+	- Recherche du plus cours chemin d'une position (combinaison case, orientation) à une autre avec Dijkstra
+	- Création du joueur artificiel
+	
+
+Pour exécuter les tests de notre code, il faut exécuter exemple.
+
+Lors de l'utilisation de valgrind, nous avons 0 erreur et toute notre mémoire allouée est libérée. L'éxécution de notre code avec valgrind est très longue (environ 4-5 minutes) contre 4 secondes sans.
+Voici les logs de valgrind:
+	==6687== 
+	==6687== HEAP SUMMARY:
+	==6687==     in use at exit: 0 bytes in 0 blocks
+	==6687==   total heap usage: 388,189 allocs, 388,189 frees, 228,327,554 bytes allocated
+	==6687== 
+	==6687== All heap blocks were freed -- no leaks are possible
+	==6687== 
+	==6687== For counts of detected and suppressed errors, rerun with: -v
+	==6687== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+	
+Pour ce qui est de la compléxité de notre fonction artificial_player, toutes nos opérations sont en temps constant sauf l'éxécution de Dijkstra. Ainsi notre fonction est de même compléxité que Dijkstra donc en log(n)
+
