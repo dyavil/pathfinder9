@@ -27,6 +27,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <stdlib.h>
 #include "board.hpp"
 
 //a graph node
@@ -114,6 +115,13 @@ void graph_to_file(graph & g);
 //------------------------------------------------------------------------------------------------//
 
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  dijkstra
+ *  Description:  using dijkstra alogorithm, fill res with the shortest path to each
+ *                position from the robot_start position
+ * =====================================================================================
+ */
 void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res);
 
 /* 
@@ -133,7 +141,7 @@ std::string get_way_to(RRRobot & robot_goal, std::vector<movement> ways, graph g
  *                permit it, dijkstra is used to get the best one(the closest one).
  * =====================================================================================
  */
-std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> & actions, int & nb_mvt);
+std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> & actions, int & nb_mvt, std::string & dijkstra_movs);
 
 
 

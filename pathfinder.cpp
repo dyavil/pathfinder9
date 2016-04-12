@@ -10,7 +10,8 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Quintard Livaï (dyavil), livai.quintard@etu.univ-lyon1.fr
+ *         Author:  Quintard Livaï, livai.quintard@etu.univ-lyon1.fr 11508352
+ *                  Georges Antoine, antoine.georges@etu.univ-lyon1.fr 11200730
  *   Organization:  
  *
  * =====================================================================================
@@ -268,7 +269,7 @@ void dijkstra(graph & g, RRRobot & robot_start, std::vector<movement> & res)
     queue.push_back(current_mov);
     done.insert(current_mov.current_state);
     current_mov.weight_from_start = -1;
-    
+
     /* While there is a node to handle */
     while(!queue.empty())
     {
@@ -355,7 +356,7 @@ std::string get_way_to(RRRobot & goal, std::vector<movement> ways, graph g, std:
         rmoves.clear();
         return resf;
     }
-    
+
     //running through the ways vector looking for the path
     for(unsigned int i = 0; i < min-1; i++)
     {
@@ -370,7 +371,7 @@ std::string get_way_to(RRRobot & goal, std::vector<movement> ways, graph g, std:
             }
         }
     }
-    
+
     //filling resulting string and movs array
     for( int i = rr.length()-1; i >=0; --i)
     {
@@ -378,39 +379,40 @@ std::string get_way_to(RRRobot & goal, std::vector<movement> ways, graph g, std:
         switch(t)
         {
             case 'a':
-                resf += "Avance de 1 ,";
+                resf += "Avance de 1";
                 rmoves.push_back((RRRobotMove)0);
                 break;
             case 'b':
-                resf += "Avance de 2 ,";
+                resf += "Avance de 2";
                 rmoves.push_back((RRRobotMove)1);
                 break;
             case 'c':
-                resf += "Avance de 3 ,";
+                resf += "Avance de 3";
                 rmoves.push_back((RRRobotMove)2);
                 break;
             case 'd':
-                resf += "Recule de 1 ,";
+                resf += "Recule de 1";
                 rmoves.push_back((RRRobotMove)3);
                 break;
             case 'e':
-                resf += "Tourne à gauche ,";
+                resf += "Tourne à gauche";
                 rmoves.push_back((RRRobotMove)4);
                 break;
             case 'f':
-                resf += "Tourne à droite ,";
+                resf += "Tourne à droite";
                 rmoves.push_back((RRRobotMove)5);
                 break;
             case 'g':
-                resf += "Demi tour ,";
+                resf += "Demi tour";
                 rmoves.push_back((RRRobotMove)6);
                 break;
         }
+        if(i !=0 ) resf += ", ";
     } 
     return resf;
 }
 
-std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> & actions, int & nb_mvt)
+std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & robot, RRRobot & goal, std::vector<RRRobotMove> & actions, int & nb_mvt, std::string & dijkstra_movs)
 {
     /* Initialization part (yeah, lot of variables) */
     std::vector<movement> ways;
@@ -420,7 +422,7 @@ std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & rob
     std::vector<RRRobotMove> action_final;
     std::vector<RRRobotMove> best;
     std::vector<RRRobotMove> best_by_dijkstra;
-    std::string dijkstra_movs = "";
+    dijkstra_movs = "";
 
     best = actions;
     unsigned int weight_dijkstra = 4000000000;
@@ -428,7 +430,7 @@ std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & rob
     movement goalmov = robotpos_to_movement(goal, g);
     //here we are already on the right position
     if(robotpos_to_movement(robtemp, g).current_state == goalmov.current_state) std::cout << "found" << std::endl;
-    
+
     //testing each sequence of action possible while keeping the best one
     for(unsigned int i = 0; i < 9; i++)
     {
@@ -519,12 +521,12 @@ std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & rob
         nb_mvt = best.size();
         dijkstra_movs = "";
     }
- 
+
     //finally we put the resulting movements
     //on the beginning of the input pool
     //and return it
     std::vector<RRRobotMove> temp_ac = actions;
-    for(int n = 0; n < best.size(); n++)
+    for(unsigned int n = 0; n < best.size(); n++)
     {
 	    for(int o = 0; o < 9; o++)
 	    {
@@ -541,7 +543,6 @@ std::vector<RRRobotMove> artificial_player(RRBoard board, graph g, RRRobot & rob
 		    best.push_back(temp_ac[n]);
 		}
     }
-    std::cout << dijkstra_movs << std::endl;
     return best;
 }
 
